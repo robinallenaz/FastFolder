@@ -1,0 +1,35 @@
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FastFolder — Options</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main>
+      <h1>FastFolder — Choose a Bookmarks Folder</h1>
+      <p>Select the folder you want to appear in the popup.</p>
+      <div id="tree" class="tree"></div>
+      <div class="bar">
+        <button id="save" disabled>Save</button>
+        <span id="status" class="status"></span>
+      </div>
+
+      <h2>Theme</h2>
+      <div class="theme-controls">
+        <label><input type="radio" name="theme" value="system"> Follow system</label><br>
+        <label><input type="radio" name="theme" value="light"> Light</label><br>
+        <label><input type="radio" name="theme" value="dark"> Dark</label>
+      </div>
+
+      <details class="tips">
+        <summary>Pinned button?</summary>
+        <p>In Chrome/Edge: click the puzzle icon in the toolbar → pin <em>FastFolder</em>.<br/>
+        In Firefox: right-click the toolbar → <em>Customize Toolbar…</em> → drag the icon in.</p>
+      </details>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>

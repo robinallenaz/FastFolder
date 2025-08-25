@@ -1,0 +1,27 @@
+
+body { font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; padding: 20px; background: #fff; color: #000; }
+h1 { font-size: 20px; margin: 0 0 10px; }
+.tree { border: 1px solid #ddd; border-radius: 8px; padding: 10px; max-height: 60vh; overflow: auto; }
+.folder { display: block; margin-left: 0; }
+.folder details { margin-left: 18px; }
+.folder summary { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.folder input[type=radio] { margin-right: 6px; }
+.folder .name { font-weight: 600; }
+.bar { margin-top: 12px; display: flex; align-items: center; gap: 12px; }
+.status { color: #2a7a2a; }
+button { padding: 6px 10px; border: 1px solid #bbb; background: #f6f6f6; border-radius: 8px; cursor: pointer; }
+button:disabled { opacity: 0.6; cursor: default; }
+.tips { margin-top: 14px; }
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  body:not(.light) { background: #1e1e1e; color: #ddd; }
+}
+
+body.dark { background: #1e1e1e; color: #ddd; }
+body.dark h1 { color: #fff; }
+body.dark .tree { border-color: #333; }
+body.dark .name { color: #eee; }
+body.dark .bar { color: #ccc; }
+body.dark button { background: #2c2c2c; border-color: #555; color: #eee; }
+body.dark button:hover { background: #3a3a3a; }

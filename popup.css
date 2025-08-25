@@ -1,0 +1,41 @@
+
+* { box-sizing: border-box; }
+body { font: 13px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; min-width: 300px; max-width: 500px; background: #fff; color: #000; }
+header { padding: 10px; border-bottom: 1px solid #ddd; }
+h1 { font-size: 14px; margin: 0 0 8px; }
+#currentFolder { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+#currentFolder .label { color: #666; }
+#folderName { font-weight: 600; }
+#changeFolder { margin-left: auto; }
+#search { width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 6px; }
+main { max-height: 420px; overflow: auto; }
+ul.list { list-style: none; margin: 0; padding: 6px; }
+.list li { display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 6px; cursor: pointer; }
+.list li:hover { background: rgba(0,0,0,0.06); }
+.fav { width: 16px; height: 16px; flex: 0 0 16px; border-radius: 3px; }
+.title { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.url { color: #666; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40%; }
+footer { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-top: 1px solid #ddd; color: #666; }
+.empty { padding: 16px; text-align: center; color: #666; }
+.hidden { display: none; }
+button { padding: 4px 8px; border: 1px solid #bbb; background: #f6f6f6; border-radius: 6px; cursor: pointer; }
+button:hover { background: #eee; }
+.hint { font-size: 11px; }
+
+/* System dark mode */
+@media (prefers-color-scheme: dark) {
+  body:not(.light) { background: #1e1e1e; color: #ddd; }
+}
+
+/* Forced dark */
+body.dark { background: #1e1e1e; color: #ddd; }
+body.dark header, body.dark footer { border-color: #333; }
+body.dark h1 { color: #eee; }
+body.dark #currentFolder .label { color: #aaa; }
+body.dark #folderName { color: #fff; }
+body.dark #search { background: #2c2c2c; border-color: #444; color: #eee; }
+body.dark ul.list li:hover { background: rgba(255,255,255,0.08); }
+body.dark .url { color: #aaa; }
+body.dark .empty { color: #aaa; }
+body.dark button { background: #2c2c2c; border-color: #555; color: #eee; }
+body.dark button:hover { background: #3a3a3a; }
