@@ -1,4 +1,3 @@
-
 const $ = (sel) => document.querySelector(sel);
 
 const UI = {
@@ -43,7 +42,16 @@ function renderList(items) {
       const img = document.createElement("img");
       img.className = "fav";
       img.alt = "";
+      // Try chrome://favicon first, but fallback to Google S2 if it fails
       img.src = faviconFor(it.url);
+      img.onerror = function() {
+        try {
+          const u = new URL(it.url);
+          img.src = `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=32`;
+        } catch {
+          img.src = "";
+        }
+      };
       const title = document.createElement("div");
       title.className = "title";
       title.textContent = it.title || it.url;
