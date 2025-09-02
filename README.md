@@ -25,5 +25,4 @@ FastFolder is a browser extension that lets you instantly access a chosen bookma
 - In Chrome/Edge: Click the puzzle icon in the toolbar → pin FastFolder
 - In Firefox: Right-click the toolbar → Customize Toolbar… → drag the icon in
 
-## License
-MIT
+
