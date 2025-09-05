@@ -33,6 +33,7 @@ function faviconFor(url) {
 function renderList(items) {
   UI.list.innerHTML = "";
   if (!items.length) {
+    UI.empty.textContent = "This folder has no bookmarks.";
     UI.empty.classList.remove("hidden");
   } else {
     UI.empty.classList.add("hidden");
@@ -97,7 +98,7 @@ async function loadFolder(folderId) {
     state.items = items;
     applyFilter();
   } catch (e) {
-    UI.empty.textContent = "Folder not found. Choose another.";
+    UI.empty.textContent = "Folder not found. It may have been moved or deleted. Please choose another.";
     UI.empty.classList.remove("hidden");
   }
 }
