@@ -1,35 +1,56 @@
+// Utility function for DOM selection
 const $ = (sel) => document.querySelector(sel);
 
+// UI element references
 const UI = {
-  list: $("#list"),
-  empty: $("#empty"),
-  chooseFirst: $("#chooseFirst"),
-  folderName: $("#folderName"),
-  changeFolder: $("#changeFolder"),
-  search: $("#search"),
-  refresh: $("#refresh"),
-  openOptions: $("#openOptions")
+  list: $("#list"),          // Bookmark list container
+  empty: $("#empty"),        // Message for empty or not found folders
+  chooseFirst: $("#chooseFirst"), // Prompt to pick folders if none selected
+  folderDropdown: $("#folderDropdown"), // Dropdown for switching folders
+  changeFolder: $("#changeFolder"),    // Button to open options page
+  search: $("#search"),      // Search input box
+  refresh: $("#refresh"),    // Refresh button
+  openOptions: $("#openOptions") // Button to open options from prompt
 };
 
-let state = { folderId: null, folderTitle: null, items: [] };
+// Global state for folders, current folder, and bookmark items
+let state = { folders: [], folderId: null, folderTitle: null, items: [] };
 
-async function getStoredFolder() {
-  const { folderId, folderTitle } = await chrome.storage.sync.get(["folderId", "folderTitle"]);
-  return { folderId, folderTitle };
+// Fetch the array of selected folders from storage
+/**
+ * Retrieves the stored folders from Chrome storage.
+ * @returns {Promise<Array>} An array of folder objects.
+ */
+async function getStoredFolders() {
+  const { folders } = await chrome.storage.sync.get(["folders"]);
+  return Array.isArray(folders) ? folders : [];
 }
 
+// Get favicon URL for a bookmark
+/**
+ * Returns the favicon URL for a given bookmark URL.
+ * @param {string} url The URL of the bookmark.
+ * @returns {string} The favicon URL.
+ */
 function faviconFor(url) {
   try {
     const u = new URL(url);
+    // Try browser favicon service first
     if (typeof chrome !== "undefined" && chrome.runtime.getURL) {
       return `chrome://favicon/size/16@2x/${url}`;
     }
+    // Fallback to Google S2 favicon service
     return `https://www.google.com/s2/favicons?domain=${u.hostname}&sz=32`;
   } catch {
     return "";
   }
 }
 
+// Render the list of bookmarks for the current folder
+/**
+ * Renders the list of bookmarks for the current folder.
+ * @param {Array} items The list of bookmark items.
+ */
 function renderList(items) {
   UI.list.innerHTML = "";
   if (!items.length) {
@@ -60,6 +81,7 @@ function renderList(items) {
       url.className = "url";
       url.textContent = it.url;
       li.append(img, title, url);
+      // Open bookmark in new tab; Ctrl/Cmd-click opens in background
       li.addEventListener("click", (e) => {
         const bg = e.metaKey || e.ctrlKey;
         chrome.tabs.create({ url: it.url, active: !bg });
@@ -70,6 +92,10 @@ function renderList(items) {
   }
 }
 
+// Filter bookmarks based on search input
+/**
+ * Filters the bookmarks based on the search input.
+ */
 function applyFilter() {
   const q = UI.search.value.trim().toLowerCase();
   if (!q) { renderList(state.items); return; }
@@ -79,6 +105,12 @@ function applyFilter() {
   renderList(filtered);
 }
 
+// Recursively collect all bookmarks from a folder node
+/**
+ * Recursively collects all bookmarks from a folder node.
+ * @param {Array} nodes The folder nodes.
+ * @param {Array} out The output array of bookmarks.
+ */
 function collectBookmarks(nodes, out) {
   for (const n of nodes) {
     if (n.url) { out.push({ title: n.title, url: n.url }); }
@@ -86,13 +118,17 @@ function collectBookmarks(nodes, out) {
   }
 }
 
+// Load and display bookmarks for a given folder ID
+/**
+ * Loads and displays the bookmarks for a given folder ID.
+ * @param {string} folderId The ID of the folder.
+ */
 async function loadFolder(folderId) {
   try {
     const sub = await chrome.bookmarks.getSubTree(folderId);
     const root = sub && sub[0];
     if (!root) throw new Error("Folder not found");
     state.folderTitle = root.title || state.folderTitle || "Selected folder";
-    UI.folderName.textContent = state.folderTitle;
     const items = [];
     collectBookmarks(root.children || [], items);
     state.items = items;
@@ -103,6 +139,27 @@ async function loadFolder(folderId) {
   }
 }
 
+// Populate the folder dropdown with all selected folders
+/**
+ * Populates the folder dropdown with all selected folders.
+ * @param {Array} folders The array of folder objects.
+ * @param {string} activeId The ID of the active folder.
+ */
+function populateFolderDropdown(folders, activeId) {
+  UI.folderDropdown.innerHTML = "";
+  folders.forEach(f => {
+    const opt = document.createElement("option");
+    opt.value = f.id;
+    opt.textContent = f.title;
+    if (f.id === activeId) opt.selected = true;
+    UI.folderDropdown.appendChild(opt);
+  });
+}
+
+// Apply the selected theme to the popup
+/**
+ * Applies the selected theme to the popup.
+ */
 async function applyTheme() {
   const { theme } = await chrome.storage.sync.get("theme");
   document.body.classList.remove("dark", "light");
@@ -110,34 +167,43 @@ async function applyTheme() {
   else if (theme === "light") document.body.classList.add("light");
 }
 
+// Initialize the popup: load folders, set up UI, and event listeners
+/**
+ * Initializes the popup: loads folders, sets up UI, and event listeners.
+ */
 async function init() {
   await applyTheme();
-  const stored = await getStoredFolder();
-  state.folderId = stored.folderId || null;
-  state.folderTitle = stored.folderTitle || null;
-
-  if (!state.folderId) {
+  state.folders = await getStoredFolders();
+  if (!state.folders.length) {
     UI.chooseFirst.classList.remove("hidden");
-    UI.folderName.textContent = "Not set";
-  } else {
-    UI.chooseFirst.classList.add("hidden");
-    UI.folderName.textContent = state.folderTitle || "(loading…)";
-    await loadFolder(state.folderId);
+    UI.folderDropdown.innerHTML = "";
+    return;
   }
-
+  populateFolderDropdown(state.folders, state.folders[0].id);
+  state.folderId = state.folders[0].id;
+  await loadFolder(state.folderId);
+  // Handle folder switching
+  UI.folderDropdown.addEventListener("change", async (e) => {
+    state.folderId = e.target.value;
+    await loadFolder(state.folderId);
+  });
+  // Open options page handlers
   UI.changeFolder.addEventListener("click", () => chrome.runtime.openOptionsPage());
   UI.openOptions?.addEventListener("click", () => chrome.runtime.openOptionsPage());
+  // Refresh current folder
   UI.refresh.addEventListener("click", async () => { if (state.folderId) await loadFolder(state.folderId); });
+  // Live search
   UI.search.addEventListener("input", applyFilter);
-
+  // React to storage changes (folders or theme)
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === "sync" && changes.theme) applyTheme();
-    if (area === "sync" && changes.folderId) {
-      state.folderId = changes.folderId.newValue;
-      state.folderTitle = (changes.folderTitle && changes.folderTitle.newValue) || state.folderTitle;
-      if (state.folderId) { UI.chooseFirst.classList.add("hidden"); loadFolder(state.folderId); }
+    if (area === "sync" && changes.folders) {
+      state.folders = changes.folders.newValue || [];
+      populateFolderDropdown(state.folders, state.folderId);
     }
   });
 }
 
+// Start initialization when popup loads
+// (DOMContentLoaded ensures DOM is ready)
 document.addEventListener("DOMContentLoaded", init);
