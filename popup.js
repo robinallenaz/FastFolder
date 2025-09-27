@@ -1,6 +1,3 @@
-// Utility function for DOM selection
-const $ = (sel) => document.querySelector(sel);
-
 // UI element references
 const UI = {
   list: $("#list"),          // Bookmark list container
@@ -10,7 +7,8 @@ const UI = {
   changeFolder: $("#changeFolder"),    // Button to open options page
   search: $("#search"),      // Search input box
   refresh: $("#refresh"),    // Refresh button
-  openOptions: $("#openOptions") // Button to open options from prompt
+  openOptions: $("#openOptions"), // Button to open options from prompt
+  openAll: $("#openAll") // Open all visible bookmarks
 };
 
 // Global state for folders, current folder, and bookmark items
@@ -179,13 +177,16 @@ async function init() {
     UI.folderDropdown.innerHTML = "";
     return;
   }
-  populateFolderDropdown(state.folders, state.folders[0].id);
-  state.folderId = state.folders[0].id;
+  const { lastFolderId } = await chrome.storage.local.get(["lastFolderId"]);
+  const startId = (lastFolderId && state.folders.some(f => f.id === lastFolderId)) ? lastFolderId : state.folders[0].id;
+  populateFolderDropdown(state.folders, startId);
+  state.folderId = startId;
   await loadFolder(state.folderId);
   // Handle folder switching
   UI.folderDropdown.addEventListener("change", async (e) => {
     state.folderId = e.target.value;
     await loadFolder(state.folderId);
+    chrome.storage.local.set({ lastFolderId: state.folderId });
   });
   // Open options page handlers
   UI.changeFolder.addEventListener("click", () => chrome.runtime.openOptionsPage());
@@ -201,6 +202,17 @@ async function init() {
       state.folders = changes.folders.newValue || [];
       populateFolderDropdown(state.folders, state.folderId);
     }
+  });
+  // Open all visible bookmarks in background
+  UI.openAll?.addEventListener("click", () => {
+    const items = Array.from(UI.list.querySelectorAll("li"));
+    if (!items.length) return;
+    if (items.length > 10 && !confirm(`Open all ${items.length} bookmarks?`)) return;
+    for (const li of items) {
+      const url = li.dataset.url;
+      if (url) chrome.tabs.create({ url, active: false });
+    }
+    window.close();
   });
 }
 
