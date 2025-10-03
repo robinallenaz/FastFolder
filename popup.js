@@ -11,7 +11,7 @@ const UI = {
   openAll: $("#openAll") // Open all visible bookmarks
 };
 
-// Global state for user-selected folders, the active folder, and its bookmark items
+// Global state for user-selected folders, the active folder, and its bookmarks
 let state = { folders: [], folderId: null, folderTitle: null, items: [] };
 
 /**
