@@ -13,7 +13,7 @@ FastFolder is a browser extension that lets you instantly access one or more cho
 ## Usage
 1. Install the extension in your browser
 2. Click the FastFolder icon in your toolbar
-3. If no folder is set, use the options page to pick one or more bookmarks folders
+3. If no folder is set, use the Options page to pick one or more bookmarks folders
 4. Use the dropdown to switch between folders in the popup
 5. Click bookmarks to open them
 6. Use the search box to filter bookmarks
