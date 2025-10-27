@@ -7,7 +7,7 @@ FastFolder is a browser extension that lets you instantly access one or more cho
 - Switch between multiple folders using a dropdown in the popup
 - Search and filter bookmarks by title or URL
 - Open bookmarks in foreground or background tab (Ctrl/Cmd-click)
-- Change your selected folders at any time via the options page
+- Change your selected folders at any time via the Options page
 - Light, dark, and system theme support
 
 ## Usage
