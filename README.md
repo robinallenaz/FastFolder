@@ -26,3 +26,13 @@ FastFolder is a browser extension that lets you instantly access one or more cho
 ## Pinning the Extension
 - In Chrome/Edge: Click the puzzle icon in the toolbar → pin FastFolder
 - In Firefox: Right-click the toolbar → Customize Toolbar… → drag the icon in
+
+## Install for Development / Testing(Chrome/Edge)
+1. Open `chrome://extensions` (or `edge://extensions`).
+2. Enable Developer mode.
+3. Click "Load unpacked" and select the FastFolder folder.
+4. Pin the FastFolder icon in the toolbar.
+
+## Browser Support
+- Built and tested for Chromium browsers (Chrome, Edge) using Manifest V3.
+- Firefox: MV3 service worker support is still evolving; this project currently targets Chromium.
